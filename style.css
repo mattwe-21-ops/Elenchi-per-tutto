@@ -1,176 +1,235 @@
+:root {
+    --primary: #2c3e50;
+    --accent: #3498db;
+    --success: #27ae60;
+    --bg: #f5f7fa;
+    --paper: #ffffff;
+    --border: #dcdde1;
+}
+
+* { 
+    box-sizing: border-box; 
+    -webkit-print-color-adjust: exact; 
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #eef2f3;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
     margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 40px 20px;
+    color: var(--primary);
 }
 
-.container {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 450px;
-}
-
-h1 {
-    margin-top: 0;
-    color: #2c3e50;
-    text-align: center;
-}
-
-.input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-input[type="text"] {
-    flex: 1;
-    padding: 12px;
-    border: 2px solid #bdc3c7;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.2s;
-}
-
-input[type="text"]:focus {
-    border-color: #3498db;
-    outline: none;
-}
-
-button {
-    padding: 12px 18px;
-    border: none;
-    background-color: #2ecc71;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 15px;
-    transition: background 0.2s;
-}
-
-button:hover { background-color: #27ae60; }
-
-.toolbar {
-    background: #f8f9fa;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-.control-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.control-group label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #7f8c8d;
-}
-
-.style-btn {
-    background-color: #e0e0e0;
-    color: #333;
-    padding: 6px 12px;
-    font-size: 13px;
+/* LAYOUT FOGLIO / DOCUMENTO */
+.page {
+    background: var(--paper);
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 950px;
+    padding: 60px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    position: relative;
     border-radius: 6px;
 }
 
-.style-btn.active {
-    background-color: #3498db;
-    color: white;
-}
-
-/* Gestione Lista ed Elementi */
-ul {
-    padding-left: 25px;
-    font-size: 17px;
+header {
+    border-bottom: 2px solid var(--primary);
     margin-bottom: 30px;
-    max-height: 250px;
-    overflow-y: auto;
+    padding-bottom: 20px;
 }
 
-.list-square { list-style-type: square; }
-.list-circle { list-style-type: circle; }
-
-li {
-    margin-bottom: 10px;
-    position: relative;
-    padding-right: 40px;
-    cursor: pointer;
-    user-select: none;
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    margin: 0;
+    color: var(--primary);
 }
 
-/* Effetto sbarrato quando l'oggetto è preso */
-li.checked {
-    color: #bdc3c7;
-    text-decoration: line-through;
-}
-
-/* Pulsante elimina singolo elemento */
-.delete-item {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    color: #e74c3c;
-    padding: 2px 8px;
-    font-size: 14px;
-}
-.delete-item:hover { background: #fce4e4; color: #c0392b; }
-
-/* Zona Esportazione */
-.export-zone {
-    border-top: 2px dashed #ecf0f1;
-    padding-top: 20px;
-}
-
-.export-zone h3 {
-    font-size: 15px;
+.meta-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
     color: #7f8c8d;
-    margin-bottom: 12px;
-}
-
-.action-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.btn-secondary { background-color: #95a5a6; }
-.btn-secondary:hover { background-color: #7f8c8d; }
-
-.btn-danger { background-color: #e74c3c; grid-column: span 2; }
-.btn-danger:hover { background-color: #c0392b; }
-
-.import-group {
-    text-align: center;
     margin-top: 10px;
 }
 
-input[type="file"] { display: none; }
-
-.custom-file-upload {
-    display: inline-block;
-    padding: 10px 15px;
-    background: #34495e;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    width: calc(100% - 30px);
+/* INDICE / BOX STATISTICHE */
+.index-box {
+    background: #f8f9fa;
+    border-left: 4px solid var(--accent);
+    padding: 15px 25px;
+    margin-bottom: 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-.custom-file-upload:hover { background: #2c3e50; }
+
+.index-title { 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-size: 12px; 
+}
+
+/* CONTROLLI INTERFACCIA WEB (Nascosti in stampa) */
+.no-print {
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.input-group { 
+    flex: 1; 
+    display: flex; 
+    min-width: 300px; 
+}
+
+input[type="text"] {
+    flex: 1; 
+    padding: 12px; 
+    border: 1px solid var(--border); 
+    border-radius: 4px 0 0 4px; 
+    outline: none;
+    font-size: 15px;
+}
+
+.btn-add {
+    background: var(--accent); 
+    color: white; 
+    border: none; 
+    padding: 0 25px; 
+    border-radius: 0 4px 4px 0; 
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.style-selector button {
+    background: white; 
+    border: 1px solid var(--border); 
+    padding: 10px 18px; 
+    cursor: pointer; 
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.style-selector button.active { 
+    background: var(--primary); 
+    color: white; 
+    border-color: var(--primary); 
+}
+
+.export-btns { 
+    width: 100%; 
+    display: flex; 
+    gap: 10px; 
+    border-top: 1px solid #eee; 
+    padding-top: 15px; 
+    margin-top: 5px; 
+}
+
+.btn-export { 
+    flex: 1; 
+    padding: 11px; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-weight: 600; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px; 
+    font-size: 14px;
+}
+.btn-word { background: #2b579a; color: white; }
+.btn-pdf { background: #16a085; color: white; }
+.btn-clear { background: #e74c3c; color: white; }
+
+/* CHECKBOX GRANDI E VUOTI DI DEFAULT */
+#listContainer {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.checkbox {
+    width: 32px;  /* Dimensione aumentata e grande */
+    height: 32px; /* Dimensione aumentata e grande */
+    border: 2px solid var(--primary);
+    margin-right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: transparent; /* Vuoto inizialmente */
+    transition: all 0.2s;
+    font-size: 16px;
+}
+
+/* Gestione delle forme dinamiche tramite classe JS */
+.list-circle .checkbox { border-radius: 50%; }
+.list-square .checkbox { border-radius: 6px; }
+
+/* Quando viene completato / spuntato */
+.item.checked .checkbox {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.item.checked .text {
+    text-decoration: line-through;
+    color: #bdc3c7;
+}
+
+.text { 
+    flex: 1; 
+    font-size: 19px; 
+    cursor: pointer; 
+}
+
+.delete-btn {
+    color: #e74c3c;
+    opacity: 0;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-size: 18px;
+    transition: opacity 0.2s;
+}
+.item:hover .delete-btn { opacity: 1; }
+
+/* PIÈ DI PAGINA */
+footer {
+    position: absolute;
+    bottom: 40px;
+    left: 60px;
+    right: 60px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    color: #95a5a6;
+}
+
+/* REGOLE DI STAMPA FISICA O SU FILE (Nasconde i menu web per un layout pulito) */
+@media print {
+    body { background: white; padding: 0; }
+    .no-print { display: none !important; }
+    .page { box-shadow: none; width: 100%; max-width: none; margin: 0; padding: 20px; min-height: auto; }
+    .delete-btn { display: none !important; }
+    .item { border-bottom: 1px solid #ddd; }
+}

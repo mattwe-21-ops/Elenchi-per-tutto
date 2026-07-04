@@ -1,144 +1,146 @@
-// Riferimenti elementi DOM
+// Memoria locale degli elementi e dello stile scelto
+let items = JSON.parse(localStorage.getItem('proListItems')) || [];
+let listStyle = localStorage.getItem('proListStyle') || 'square';
+
+// Collegamenti agli elementi della pagina
 const itemInput = document.getElementById('itemInput');
-const addBtn = document.getElementById('addBtn');
-const travelList = document.getElementById('travelList');
-const styleButtons = document.querySelectorAll('.style-btn');
-const exportTxtBtn = document.getElementById('exportTxtBtn');
-const copyBtn = document.getElementById('copyBtn');
-const clearAllBtn = document.getElementById('clearAllBtn');
-const importFile = document.getElementById('importFile');
+const btnAdd = document.getElementById('btnAdd');
+const listContainer = document.getElementById('listContainer');
+const btnSquare = document.getElementById('btnSquare');
+const btnCircle = document.getElementById('btnCircle');
+const btnWord = document.getElementById('btnWord');
+const btnPrint = document.getElementById('btnPrint');
+const btnClear = document.getElementById('btnClear');
+const statsText = document.getElementById('statsText');
+const currentDate = document.getElementById('currentDate');
 
-// Array globale per contenere i dati della lista
-let items = JSON.parse(localStorage.getItem('baggageItems')) || [];
-let currentStyle = localStorage.getItem('listStyle') || 'square';
-
-// Inizializzazione pagina
-document.addEventListener('DOMContentLoaded', () => {
-    applyStyle(currentStyle);
-    renderList();
-});
-
-// Funzione per aggiornare l'interfaccia grafica e salvare i dati
-function updateData() {
-    localStorage.setItem('baggageItems', JSON.stringify(items));
-    renderList();
-}
-
-// Renderizza la lista a schermo
-function renderList() {
-    travelList.innerHTML = '';
-    items.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.textContent = item.text;
-        if (item.checked) li.classList.add('checked');
-
-        // Cliccando sull'elemento lo marchi come preso/non preso
-        li.addEventListener('click', (e) => {
-            if(e.target.classList.contains('delete-item')) return;
-            items[index].checked = !items[index].checked;
-            updateData();
-        });
-
-        // Pulsante cancella singolo elemento
-        const delBtn = document.createElement('button');
-        delBtn.textContent = '✕';
-        delBtn.className = 'delete-item';
-        delBtn.addEventListener('click', () => {
-            items.splice(index, 1);
-            updateData();
-        });
-
-        li.appendChild(delBtn);
-        travelList.appendChild(li);
-    });
-}
-
-// Aggiungere un elemento
-function addItem() {
-    const text = itemInput.value.trim();
-    if (text !== "") {
-        items.push({ text: text, checked: false });
-        itemInput.value = "";
-        updateData();
-    }
-}
-
-addBtn.addEventListener('click', addItem);
-itemInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addItem(); });
-
-// Gestione Stile (Quadrati o Cerchi)
-styleButtons.forEach(button => {
-    button.addEventListener('click', function() {
-        const style = this.getAttribute('data-style');
-        applyStyle(style);
-    });
-});
-
-function applyStyle(style) {
-    currentStyle = style;
-    localStorage.setItem('listStyle', style);
+// Funzione di avvio
+function init() {
+    const now = new Date();
+    currentDate.textContent = "Data creazione: " + now.toLocaleDateString('it-IT');
+    setStyle(listStyle);
+    render();
     
-    styleButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-style') === style);
-    });
-
-    travelList.className = style === 'circle' ? 'list-circle' : 'list-square';
+    // Eventi di ascolto click e tastiera
+    btnAdd.addEventListener('click', addItem);
+    itemInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addItem(); });
+    btnSquare.addEventListener('click', () => setStyle('square'));
+    btnCircle.addEventListener('click', () => setStyle('circle'));
+    btnClear.addEventListener('click', clearList);
+    btnPrint.addEventListener('click', () => window.print());
+    btnWord.addEventListener('click', exportToWord);
 }
 
-// Svuota tutto
-clearAllBtn.addEventListener('click', () => {
-    if(confirm("Sei sicuro di voler svuotare tutta la lista?")) {
-        items = [];
-        updateData();
+// Aggiungere un elemento alla lista
+function addItem() {
+    const val = itemInput.value.trim();
+    if(val) {
+        items.push({ id: Date.now(), text: val, checked: false });
+        itemInput.value = '';
+        saveAndRender();
     }
-});
-
-// Genera testo pulito della lista
-function getListAsText() {
-    return items.map(item => `${item.checked ? '[X]' : '[ ]'} ${item.text}`).join('\n');
 }
 
-// Esporta in file .txt
-exportTxtBtn.addEventListener('click', () => {
-    if(items.length === 0) return alert("La lista è vuota!");
-    const blob = new Blob([getListAsText()], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'cose_da_portare.txt';
-    link.click();
-});
+// Invertire lo stato (vuoto / completato)
+function toggleItem(id) {
+    items = items.map(item => item.id === id ? {...item, checked: !item.checked} : item);
+    saveAndRender();
+}
 
-// Copia negli appunti
-copyBtn.addEventListener('click', () => {
-    if(items.length === 0) return alert("La lista è vuota!");
-    navigator.clipboard.writeText(getListAsText()).then(() => {
-        alert("Lista copiata negli appunti!");
+// Cancellare un singolo elemento
+function deleteItem(id) {
+    items = items.filter(item => item.id !== id);
+    saveAndRender();
+}
+
+// Cambiare lo stile visivo tra quadrati e cerchi
+function setStyle(style) {
+    listStyle = style;
+    localStorage.setItem('proListStyle', style);
+    listContainer.className = 'list-' + style;
+    btnSquare.classList.toggle('active', style === 'square');
+    btnCircle.classList.toggle('active', style === 'circle');
+}
+
+// Reset totale della lista
+function clearList() {
+    if(confirm("Vuoi cancellare definitivamente tutta la lista?")) {
+        items = [];
+        saveAndRender();
+    }
+}
+
+function saveAndRender() {
+    localStorage.setItem('proListItems', JSON.stringify(items));
+    render();
+}
+
+// Mostra gli elementi a schermo ed aggiorna l'indice
+function render() {
+    listContainer.innerHTML = '';
+    let checkedCount = 0;
+
+    items.forEach(item => {
+        if(item.checked) checkedCount++;
+
+        const li = document.createElement('li');
+        li.className = `item ${item.checked ? 'checked' : ''}`;
+        
+        // Struttura interna dell'elemento con i listener
+        li.innerHTML = `
+            <div class="checkbox">
+                ${item.checked ? '<i class="fas fa-check"></i>' : ''}
+            </div>
+            <div class="text">${item.text}</div>
+            <div class="delete-btn"><i class="fas fa-times"></i></div>
+        `;
+
+        // Click sulla casella o sul testo per riempirlo/svuotarlo
+        li.querySelector('.checkbox').addEventListener('click', () => toggleItem(item.id));
+        li.querySelector('.text').addEventListener('click', () => toggleItem(item.id));
+        
+        // Tasto per eliminare la riga
+        li.querySelector('.delete-btn').addEventListener('click', () => deleteItem(item.id));
+
+        listContainer.appendChild(li);
     });
-});
 
-// Importa da file .txt
-importFile.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+    // Aggiornamento testuale dell'indice/statistiche
+    statsText.textContent = `${items.length} elementi totali - ${checkedCount} completati`;
+}
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const lines = e.target.result.split('\n');
-        lines.forEach(line => {
-            let cleanLine = line.trim();
-            if(cleanLine !== "") {
-                let isChecked = false;
-                if(cleanLine.startsWith('[X]') || cleanLine.startsWith('[x]')) {
-                    isChecked = true;
-                    cleanLine = cleanLine.replace(/^\[[Xx]\]\s*/, '');
-                } else if(cleanLine.startsWith('[ ]')) {
-                    cleanLine = cleanLine.replace(/^\[\s*\]\s*/, '');
-                }
-                items.push({ text: cleanLine, checked: isChecked });
-            }
-        });
-        updateData();
-        importFile.value = ''; // Reset input
-    };
-    reader.readAsText(file);
-});
+// ESPORTAZIONE DIRETTA IN COMPATIBILITÀ WORD (.doc)
+function exportToWord() {
+    if(items.length === 0) return alert("La lista è vuota!");
+
+    const htmlHeader = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+    "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+    "xmlns='http://www.w3.org/TR/REC-html40'>"+
+    "<head><meta charset='utf-8'><title>Lista Viaggio</title><style>"+
+    "body { font-family: 'Arial', sans-serif; padding: 20px; }"+
+    "h1 { color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 5px; }"+
+    "ul { list-style: none; padding: 0; }"+
+    "li { padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14pt; }"+
+    "</style></head><body>";
+    
+    let htmlContent = `<h1>Lista Cose da Portare</h1><p>Data Documento: ${new Date().toLocaleDateString('it-IT')}</p><ul>`;
+    
+    items.forEach(item => {
+        const marker = listStyle === 'square' ? "□" : "○";
+        const status = item.checked ? " [PRESO]" : " [DA PORTARE]";
+        htmlContent += `<li>${marker} ${item.text} <i>${status}</i></li>`;
+    });
+    
+    htmlContent += "</ul></body></html>";
+
+    const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(htmlHeader + htmlContent);
+    const fileDownload = document.createElement("a");
+    document.body.appendChild(fileDownload);
+    fileDownload.href = source;
+    fileDownload.download = 'lista_cose_da_portare.doc';
+    fileDownload.click();
+    document.body.removeChild(fileDownload);
+}
+
+// Avvia lo script all'apertura
+init();
